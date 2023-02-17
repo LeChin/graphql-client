@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-require 'action_view'
-require 'graphql/client/erubi_enhancer'
+require "action_view"
+require "graphql/client/erubi_enhancer"
 
 module GraphQL
   class Client

@@ -132,7 +132,7 @@ module GraphQL
           case selected_ast_node
           when GraphQL::Language::Nodes::InlineFragment
             continue_selection = if selected_ast_node.type.nil?
-              true
+                                   true
             else
               type_condition = definition.client.get_type(selected_ast_node.type.name)
               applicable_types = definition.client.possible_types(type_condition)

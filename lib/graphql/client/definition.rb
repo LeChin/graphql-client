@@ -157,66 +157,66 @@ module GraphQL
 
       private
 
-        def cast_object(obj)
-          if obj.class.is_a?(GraphQL::Client::Schema::ObjectType)
-            unless obj._spreads.include?(definition_node.name)
-              raise TypeError, "#{definition_node.name} is not included in #{obj.source_definition.name}"
-            end
-            schema_class.cast(obj.to_h, obj.errors)
+      def cast_object(obj)
+        if obj.class.is_a?(GraphQL::Client::Schema::ObjectType)
+          unless obj._spreads.include?(definition_node.name)
+            raise TypeError, "#{definition_node.name} is not included in #{obj.source_definition.name}"
+          end
+          schema_class.cast(obj.to_h, obj.errors)
+        else
+          raise TypeError, "unexpected #{obj.class}"
+        end
+      end
+
+      EMPTY_SET = Set.new.freeze
+
+      def index_spreads(visitor)
+        spreads = {}
+        on_node = ->(node, _parent) do
+          node_spreads = flatten_spreads(node).map(&:name)
+          spreads[node] = node_spreads.empty? ? EMPTY_SET : Set.new(node_spreads).freeze
+        end
+
+        visitor[GraphQL::Language::Nodes::Field] << on_node
+        visitor[GraphQL::Language::Nodes::FragmentDefinition] << on_node
+        visitor[GraphQL::Language::Nodes::OperationDefinition] << on_node
+
+        spreads
+      end
+
+      def flatten_spreads(node)
+        spreads = []
+        node.selections.each do |selection|
+          case selection
+          when Language::Nodes::FragmentSpread
+            spreads << selection
+          when Language::Nodes::InlineFragment
+            spreads.concat(flatten_spreads(selection))
           else
-            raise TypeError, "unexpected #{obj.class}"
+            # Do nothing, not a spread
           end
         end
+        spreads
+      end
 
-        EMPTY_SET = Set.new.freeze
+      def index_node_definitions(visitor)
+        current_definition = nil
+        enter_definition = ->(node, _parent) { current_definition = node }
+        leave_definition = ->(node, _parent) { current_definition = nil }
 
-        def index_spreads(visitor)
-          spreads = {}
-          on_node = ->(node, _parent) do
-            node_spreads = flatten_spreads(node).map(&:name)
-            spreads[node] = node_spreads.empty? ? EMPTY_SET : Set.new(node_spreads).freeze
-          end
+        visitor[GraphQL::Language::Nodes::FragmentDefinition].enter << enter_definition
+        visitor[GraphQL::Language::Nodes::FragmentDefinition].leave << leave_definition
+        visitor[GraphQL::Language::Nodes::OperationDefinition].enter << enter_definition
+        visitor[GraphQL::Language::Nodes::OperationDefinition].leave << leave_definition
 
-          visitor[GraphQL::Language::Nodes::Field] << on_node
-          visitor[GraphQL::Language::Nodes::FragmentDefinition] << on_node
-          visitor[GraphQL::Language::Nodes::OperationDefinition] << on_node
-
-          spreads
-        end
-
-        def flatten_spreads(node)
-          spreads = []
-          node.selections.each do |selection|
-            case selection
-            when Language::Nodes::FragmentSpread
-              spreads << selection
-            when Language::Nodes::InlineFragment
-              spreads.concat(flatten_spreads(selection))
-            else
-              # Do nothing, not a spread
-            end
-          end
-          spreads
-        end
-
-        def index_node_definitions(visitor)
-          current_definition = nil
-          enter_definition = ->(node, _parent) { current_definition = node }
-          leave_definition = ->(node, _parent) { current_definition = nil }
-
-          visitor[GraphQL::Language::Nodes::FragmentDefinition].enter << enter_definition
-          visitor[GraphQL::Language::Nodes::FragmentDefinition].leave << leave_definition
-          visitor[GraphQL::Language::Nodes::OperationDefinition].enter << enter_definition
-          visitor[GraphQL::Language::Nodes::OperationDefinition].leave << leave_definition
-
-          definitions = {}
-          on_node = ->(node, _parent) { definitions[node] = current_definition }
-          visitor[GraphQL::Language::Nodes::Field] << on_node
-          visitor[GraphQL::Language::Nodes::FragmentDefinition] << on_node
-          visitor[GraphQL::Language::Nodes::InlineFragment] << on_node
-          visitor[GraphQL::Language::Nodes::OperationDefinition] << on_node
-          definitions
-        end
+        definitions = {}
+        on_node = ->(node, _parent) { definitions[node] = current_definition }
+        visitor[GraphQL::Language::Nodes::Field] << on_node
+        visitor[GraphQL::Language::Nodes::FragmentDefinition] << on_node
+        visitor[GraphQL::Language::Nodes::InlineFragment] << on_node
+        visitor[GraphQL::Language::Nodes::OperationDefinition] << on_node
+        definitions
+      end
     end
   end
 end

@@ -2,12 +2,12 @@
 source "https://rubygems.org"
 gemspec
 
-gem "actionpack", '7.0.4.2'
-gem "activesupport", '7.0.4.2'
+gem "actionpack", "7.0.4.2"
+gem "activesupport", "7.0.4.2"
 
-gem "graphql", '2.0.16'
+gem "graphql", "2.0.16"
 
-gem 'pry'
+gem "pry"
 
 group :development, :test do
   gem "rubocop", "~> 1.45"
