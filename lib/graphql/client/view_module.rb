@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "active_support/dependencies"
 require "active_support/inflector"
-require "graphql/client/erubis_enhancer"
+require "graphql/client/erubi_enhancer"
 
 module GraphQL
   class Client

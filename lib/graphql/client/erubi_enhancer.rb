@@ -14,6 +14,8 @@ module GraphQL
     module ErubiEnhancer
       # Internal: Extend Erubi handler to simply ignore <%graphql sections.
       def initialize(input, *args)
+        require 'pry'
+        binding.pry
         input = input.gsub(/<%graphql/, "<%#")
         super(input, *args)
       end

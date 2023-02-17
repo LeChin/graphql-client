@@ -1,3 +1,5 @@
+FORK - works on Rails 7
+
 # graphql-client [![Gem Version](https://badge.fury.io/rb/graphql-client.svg)](https://badge.fury.io/rb/graphql-client) [![CI](https://github.com/github/graphql-client/workflows/CI/badge.svg)](https://github.com/github/graphql-client/actions?query=workflow)
 
 GraphQL Client is a Ruby library for declaring, composing and executing GraphQL queries.

@@ -56,10 +56,10 @@ class TestClientErrors < MiniTest::Test
   class Schema < GraphQL::Schema
     query(QueryType)
 
-    if defined?(GraphQL::Execution::Interpreter)
-      use GraphQL::Execution::Interpreter
-      use GraphQL::Analysis::AST
-    end
+    # if defined?(GraphQL::Execution::Interpreter)
+    #   use GraphQL::Execution::Interpreter
+    #   use GraphQL::Analysis::AST
+    # end
   end
 
   module Temp

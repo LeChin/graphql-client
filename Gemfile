@@ -2,13 +2,13 @@
 source "https://rubygems.org"
 gemspec
 
-rails_version = ENV["RAILS_VERSION"] == "edge" ? { github: "rails/rails" } : ENV["RAILS_VERSION"]
-gem "actionpack", rails_version
-gem "activesupport", rails_version
+gem "actionpack", '7.0.4.2'
+gem "activesupport", '7.0.4.2'
 
-graphql_version = ENV["GRAPHQL_VERSION"] == "edge" ? { github: "rmosolgo/graphql-ruby", ref: "interpreter-without-legacy" } : ENV["GRAPHQL_VERSION"]
-gem "graphql", graphql_version
+gem "graphql", '2.0.16'
+
+gem 'pry'
 
 group :development, :test do
-  gem "rubocop", "~> 0.82.0"
+  gem "rubocop", "~> 1.45"
 end
